@@ -1,0 +1,43 @@
+.input-group > .input-group-prepend {
+    flex: 0 0 25%;
+}
+
+.input-group .input-group-text {
+    width: 100%;
+}
+
+.form-group > .invalid-feedback {
+    margin-left: 0.5rem;
+}
+
+form > .invalid-feedback {
+    margin-left: 0.5rem;
+}
+
+body {
+    background-color: lightgray;
+}
+
+.navbar-search, .navbar-search:focus {
+    background-color: rgb(71, 80, 89);
+    color: lightgray;
+    border-color: transparent;
+}
+
+.navbar-search:focus {
+    box-shadow: 0 0 .1rem .1rem #198754;
+}
+
+.comment-row {
+    background-color: white;
+}
+
+.comment-text {
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.comment-date {
+    font-size: 0.875em;
+    color: #6c757d;
+}

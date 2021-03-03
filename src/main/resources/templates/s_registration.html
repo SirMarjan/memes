@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" th:with="site_name='Registration'" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{f_base :: head(${site_name})}">
+    <head th:replace="~{f_base :: head(${site_name})}">
+        <title>Lorem Ipsum</title>
+    </head>
+
+<body>
+<br th:replace="~{f_base :: navbar(${site_name})}"/>
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="row ms-1 mb-3">Registration</h2>
+            <form autocomplete="off" class="row g-2" id="registration_form" method="POST" novalidate
+                  th:action="@{/registration}" th:object="${registrationForm}">
+                <div class="text-warning" th:if="${#fields.hasAnyErrors()}">Bad from input</div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="registration_username">Username</label>
+                    </div>
+                    <input class="form-control" id="registration_username" maxlength="32" minlength="4"
+                           pattern="[a-zA-Z0-9_]+"
+                           required th:field="*{username}"
+                           title="Username between 4 and 32 characters ( only a-z A-Z 0-9 and _ )"
+                           type="text"/>
+                    <div class="invalid-feedback" id="username_feedback">
+                        Username between 4 and 32 characters ( only a-z A-Z 0-9 and _ )
+                    </div>
+                    <div class="invalid-feedback d-block" id="registration_username_exist_message"
+                         th:if="${#lists.contains(registrationErrors, 'UsernameExist')}">
+                        Username <span th:text="*{username}"></span> exist
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="registration_password">Password</label>
+                    </div>
+                    <input class="form-control" id="registration_password" maxlength="32" minlength="4"
+                           required th:field="*{password}"
+                           title="Password between 4 and 32 characters"
+                           type="password"/>
+                    <div class="invalid-feedback" id="feedback_password">
+                        Password between 4 and 32 characters.
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="repeat_password">Repeat password</label>
+                    </div>
+                    <input class="form-control" id="repeat_password" maxlength="32" required type="password"/>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="registration_email">E-mail</label>
+                    </div>
+                    <input class="form-control" id="registration_email" required
+                           th:field="*{email}"
+                           type="email"/>
+                    <div class="invalid-feedback" id="feedback_email">
+                        Wrong email
+                    </div>
+                    <div class="invalid-feedback d-block" id="registration_email_exist_message"
+                         th:if="${#lists.contains(registrationErrors, 'EmailExist')}">
+                        Email <span th:text="*{email}"></span> exist
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="repeat_email">Repeat e-mail</label>
+                    </div>
+                    <input class="form-control" id="repeat_email" required type="email"/>
+                </div>
+
+                <input class="btn btn-success" id="registration_submit" type="submit" value="Sign on">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<br th:replace="~{f_base :: script}"/>
+<script th:src="@{/js/form_validation.js}"></script>
+<script>
+    const registrationUsername = document.getElementById('registration_username');
+    const feedbackUsername = document.getElementById('username_feedback');
+    const repeatPassword = document.getElementById('repeat_password');
+    const registrationPassword = document.getElementById('registration_password');
+    const feedbackPassword = document.getElementById('feedback_password');
+    const registrationEmail = document.getElementById('registration_email');
+    const repeatEmail = document.getElementById('repeat_email');
+    const emailFeedback = document.getElementById('feedback_email');
+    const registrationForm = document.getElementById('registration_form');
+
+
+    console.log('registrationForm.addEventListener');
+    registrationForm.addEventListener('submit', ev => {
+        Array.from([repeatEmail, repeatPassword]).forEach(repeatInput => {
+            if (!repeatInput.value) {
+                setInputInvalid(repeatInput, null, 'isNotEquals');
+            }
+        });
+        Array.from([registrationUsername, registrationPassword, registrationEmail]).forEach(registrationInput => {
+            registrationInput.dispatchEvent(changeEvent);
+        });
+        if (!registrationForm.checkValidity()) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
+    })
+
+    console.log('registrationInputFeedback');
+    registerInputFeedback(registrationUsername, feedbackUsername);
+    registerInputFeedback(registrationPassword, feedbackPassword);
+    registerInputFeedback(registrationEmail, emailFeedback);
+
+    console.log('registrationRepeatMatchMainInput');
+    registerRepeatMatchMainInput(registrationPassword, repeatPassword);
+    registerRepeatMatchMainInput(registrationEmail, repeatEmail);
+
+    console.log('Array.from registrationForm.getElementsByTagName');
+    Array.from(registrationForm.getElementsByTagName('input')).forEach(input => {
+        if (input.value) {
+            input.dispatchEvent(changeEvent);
+        }
+    })
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" th:with="site_name='Meme'" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{f_base :: head(${site_name})}">
+    <title>Lorem Ipsum</title>
+</head>
+
+<body>
+<br th:replace="~{f_base :: navbar(${site_name})}">
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-11 col-md-8 col-xl-6">
+            <div class="row" id="meme-container">
+                <div class="row">
+                    <br th:replace="~{f_base :: meme(${memeSummary})}">
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="row">
+                    <textarea class="form-control" id="comment-text" placeholder="Comment"></textarea>
+                </div>
+                <div class="row">
+                    <div class="d-grid p-0">
+                        <button class="btn btn-primary" id="comment-submit">Send</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mx-0 my-2" id="comments-container">
+                <div class="row">
+                    <div class="d-block ">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="comment-template">
+    <div class="row comment-row rounded-2 my-1 p-1 p-lg-2">
+        <div class="row h4 comment-username">
+        </div>
+        <div class="row h6 comment-date">
+        </div>
+        <hr class="my-2"/>
+        <div class="row comment-text">
+        </div>
+    </div>
+</template>
+
+
+<br th:replace="~{f_base :: script}">
+<script th:src="@{/js/meme_controller.js}"></script>
+<script>
+    const memeMainClass = 'card';
+    const memePositiveBtnClass = 'btn-positive';
+    const memeNegativeBtnClass = 'btn-negative';
+
+    const cards = document.getElementsByClassName(memeMainClass);
+    const memesControllers = []
+
+    Array.from(cards).forEach(function (card) {
+        const btnPositive = card.getElementsByClassName(memePositiveBtnClass).item(0);
+        const btnNegative = card.getElementsByClassName(memeNegativeBtnClass).item(0);
+        const memeId = card.attributes['data-meme-id'].value;
+        const memeScore = card.attributes['data-meme-score'].value;
+        memesControllers.push(new MemeController(memeId, btnPositive, btnNegative, memeScore));
+    })
+
+    function createCommentElement(user, date, text) {
+        const newComment = document.getElementById('comment-template').content.firstElementChild.cloneNode(true);
+        console.log(newComment);
+        console.log(newComment.getElementsByClassName('comment-username'));
+        newComment.getElementsByClassName('comment-username')[0].innerText = user;
+        newComment.getElementsByClassName('comment-date')[0].innerText = date;
+        newComment.getElementsByClassName('comment-text')[0].innerText = text;
+        return newComment;
+    }
+
+
+
+    {
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+
+
+        const commentContainer = document.getElementById('comments-container');
+
+        const commentText = document.getElementById('comment-text');
+        const commentSubmit = document.getElementById('comment-submit');
+
+        commentSubmit.addEventListener('click', () => {
+            if (commentText.value && commentText.value.length > 1) {
+                commentSubmit.disable = true;
+                fetch('/meme/' + cards[0].attributes['data-meme-id'].value + '/comment', {
+                    method: 'POST',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify({commentText: commentText.value})
+                }).then(async (response) => {
+                    commentSubmit.disable = false;
+                    if (response.ok) {
+                        let commentSummary = await response.json();
+                        commentContainer.insertBefore(
+                            createCommentElement(
+                                commentSummary['username'],
+                                new Date(Number((commentSummary['createTimestamp'])) * 1000).toLocaleString(),
+                                commentSummary['commentText']), commentContainer.firstChild);
+                    }
+                }, () => {
+                    commentSubmit.disable = false;
+                })
+            }
+        })
+
+    }
+
+</script>
+
+</body>
+</html>

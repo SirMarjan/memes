@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" th:with="site_name='Memes'" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{f_base :: head(${site_name})}">
+    <title>Lorem Ipsum</title>
+</head>
+
+<body>
+<br th:replace="~{f_base :: navbar(${site_name})}">
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-11 col-md-8 col-xl-6" id="meme_container">
+            <div class="row mb-3" th:each="memeSummary : ${memeSummaryPage}">
+                <br th:replace="~{f_base :: meme(${memeSummary})}">
+            </div>
+
+            <div class="row my-3">
+                <div class="d-grid gap-2 d-md-flex justify-content-evenly">
+                    <a th:href="@{/(page=${memeSummaryPage.previousPageable().getPageNumber()}, search=${param.search})}"
+                       th:if="${memeSummaryPage.hasPrevious()}" class="btn btn-primary btn-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="32" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                        </svg>
+                    </a>
+                    <a th:href="@{/(page=${memeSummaryPage.nextPageable().getPageNumber()}, search=${param.search})}"
+                       th:if="${memeSummaryPage.hasNext()}" class="btn btn-primary btn-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="32" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br th:replace="~{f_base :: script}">
+<script th:src="@{/js/meme_controller.js}"></script>
+<script>
+    const memeMainClass = 'card';
+    const memePositiveBtnClass = 'btn-positive';
+    const memeNegativeBtnClass = 'btn-negative';
+
+    let cards = document.getElementsByClassName(memeMainClass);
+    let memesControllers = []
+
+    Array.from(cards).forEach(function (card) {
+        let btnPositive = card.getElementsByClassName(memePositiveBtnClass).item(0);
+        let btnNegative = card.getElementsByClassName(memeNegativeBtnClass).item(0);
+        let memeId = card.attributes['data-meme-id'].value;
+        let memeScore = card.attributes['data-meme-score'].value;
+        memesControllers.push(new MemeController(memeId, btnPositive, btnNegative, memeScore));
+    })
+</script>
+</body>
+</html>

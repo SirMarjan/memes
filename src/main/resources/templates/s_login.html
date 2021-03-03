@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" th:with="site_name='Login'" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{f_base :: head(${site_name})}">
+    <title>Lorem Ipsum</title>
+</head>
+
+<body>
+<br th:replace="~{f_base :: navbar(${site_name})}">
+
+
+<div class="container-fluid">
+    <div class=" row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="row ms-1 mb-3">Login</h2>
+            <form autocomplete="off" class="row g-2" method="POST" novalidate th:action="@{/login}">
+                <div class="text-success " th:if="${param.logout}">
+                    Logout successful
+                </div>
+                <div class="text-success" th:if="${param.registration}">
+                    Registration successful
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="login_username">Username</label>
+                    </div>
+                    <input class="form-control" id="login_username" maxlength="32" minlength="4" name="username"
+                           pattern="[a-zA-Z0-9_]+"
+                           placeholder="username"
+                           title="Username between 4 and 32 characters ( only a-z A-Z 0-9 and _ )"
+                           type="text"/>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="login_password">Password</label>
+                    </div>
+                    <input class="form-control" id="login_password" maxlength="32" minlength="4"
+                           name="password" title="Username between 4 and 32 characters ( only a-z A-Z 0-9 and _ )"
+                           type="password"/>
+                </div>
+                <div class="invalid-feedback d-block" th:if="${param.error}">
+                    Wrong username or password.
+                </div>
+                <input class="btn btn-success" type="submit" value="Sign in">
+            </form>
+        </div>
+    </div>
+</div>
+
+<br th:replace="~{f_base :: script}">
+</body>
+</html>

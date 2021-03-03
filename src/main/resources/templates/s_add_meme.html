@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" th:with="site_name='Add meme'" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{f_base :: head(${site_name})}">
+    <title>Lorem Ipsum</title>
+</head>
+
+<body>
+<br th:replace="~{f_base :: navbar(${site_name})}">
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="row mb-2 ms-1">Add meme</h1>
+            <form class="row g-3" enctype="multipart/form-data" id="am_form" novalidate
+                  th:action="@{/add_meme}" th:method="post" th:object="${addMemeForm}">
+                <span class="text-danger" th:if="${#fields.hasAnyErrors()}">Wrong input data</span>
+                <div>
+                    <label class="form-label" for="am_title">Title:</label>
+                    <input class="form-control" id="am_title" maxlength="65" required th:field="*{title}" type="text">
+                </div>
+                <div>
+                    <label class="form-label" for="am_image">Image:</label>
+                    <input accept="image/*" class="form-control form-control-lg" id="am_image" required
+                           th:field="*{image}" type="file">
+                </div>
+                <figure class="figure col-6 bg-light rounded ms-2">
+                    <img alt="image"
+                         class="card-img img-fluid rounded mt-2" id="am_image_preview"
+                         src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg">
+                    <figcaption class="figure-caption" id="am_image_caption">Image</figcaption>
+                </figure>
+                <div>
+                    <input class="btn btn-success" type="submit" value="Send">
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<br th:replace="~{f_base :: script}">
+<script th:src="@{js/form_validation.js}"></script>
+<script>
+    const amTitle = document.getElementById('am_title');
+    const amImage = document.getElementById('am_image');
+    const amForm = document.getElementById('am_form');
+    const amImagePreview = document.getElementById('am_image_preview');
+    const amImageCaption = document.getElementById('am_image_caption');
+
+    amImage.addEventListener('change', change_ev => {
+        console.log(change_ev)
+        if (change_ev.target.files != null && change_ev.target.files.length !== 0) {
+            let reader = new FileReader();
+            reader.onload = function (reader_ev) {
+                amImagePreview.src = reader_ev.target.result;
+                amImageCaption.innerText = change_ev.target.files[0].name;
+            }
+            reader.readAsDataURL(change_ev.target.files[0]);
+        }
+    })
+
+    registerInputFeedback(amTitle, null);
+    registerInputFeedback(amImage, null);
+
+    amForm.addEventListener('submit', (ev => {
+        Array.from([amTitle, amImage]).forEach(value => {
+            value.dispatchEvent(changeEvent);
+        })
+        if (!ev.target.checkValidity()) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
+    }))
+
+</script>
+</body>
+</html>
